@@ -83,7 +83,7 @@
     - countBy
     - groupBy
     - queryString
-2. 명령형 습관 지우기    - 만능 reduce? No!
+2. 명령형 습관 지우기 - 만능 reduce? No!
     - reduce(복잡한함수, acc, iter) 보다 reduce(함수, map(함수))
     - 복잡한 reduce 하나 보다 map + filter + reduce
     - queryString
@@ -99,7 +99,7 @@
     - values
     - entries
     - keys
-    - 어떤 값이든 이터러블 프로그래밍으로 다루기    - 제너레이터의 다형성
+    - 어떤 값이든 이터러블 프로그래밍으로 다루기 - 제너레이터의 다형성
     - fromEntries
     - mapObject
     - pick
@@ -108,7 +108,7 @@
 5. 객체지향과 함께 사용하기
     - Map, Set, NodeList
     - Model, Collection 클래스 만들어서 이터러블 프로토콜 지원하기
-    - Product, Products    - 메서드를 함수형으로 구현하기
+    - Product, Products - 메서드를 함수형으로 구현하기
 
 ## 4회
 1. 장바구니 만들기
@@ -128,17 +128,16 @@
     - 비동기를 값으로 만드는 Promise
     - 값으로서의 Promise 활용
     - 합성 관점에서의 Promise와 모나드
-    - Kleisli Composition 관점에서의 Promise
+    - Promise를 Kleisli Composition 관점으로 보기
     - go, pipe, reduce에서 비동기 제어
     - promise.then의 중요한 규칙
 2. 비동기/동시성 프로그래밍 2
-    - 지연 평가 + Promise    - L.map, map, take
-    - Kleisli Composition    - L.filter, filter, nop, take
+    - 지연 평가 + Promise - L.map, map, take, L.filter, filter, nop, take
     - reduce에서 nop 지원
     - 지연 평가 + Promise의 효율성
 3. 비동기/동시성 프로그래밍 3
-    - 지연된 함수열을 병렬적으로 평가하기    - C.reduce, C.take
-    - 즉시 병렬적으로 평가하기    - C.map, C.filter
+    - 지연된 함수열을 병렬적으로 평가하기 - C.reduce, C.take
+    - 즉시 병렬적으로 평가하기 - C.map, C.filter
     - 즉시, 지연, Promise, 병렬적 조합하기
 
 ## 6회
@@ -159,7 +158,7 @@
     - 클래스를 대신 함수로 하는 추상화
     - 이미지 동시성 다루기
     - 동시성 부하 조절
-    - 고차 함수로 더 작게 나누어 재사용성 높이기    - 데이터형 없애기
+    - 고차 함수로 더 작게 나누어 재사용성 높이기 - 데이터형 없애기
     - 상위 스코프 변수를 사용하는 함수와 아닌 함수들 쪼개기
     - DOM을 다루는 고차 함수
 
