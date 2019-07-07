@@ -151,6 +151,33 @@ const {log, clear} = console;
   그 가치는 단순히 문법이나 코딩 컨벤션을 지키는 것과는 비교할 수 없을 만큼 특별하다.
 - 명령형 코드는 서로의 코드를 이해하기 어렵지만
   함수형 코드는 이해하기 쉬울 뿐 아니라 '코드를 응용(Applicative)' 할 수 있게 한다.
+<script>
+// 명령형
+function query1(obj) {
+  let res = '';
+  for (const k in obj) {
+    const v = obj[k];
+    if (v === undefined) continue;
+    if (res != '') res += '&';
+    res += k + '=' + v;
+  }
+  return res;
+}
+query1({a: 1, b: undefined, c: 'CC', d: 'DD'});
+// a=1&c=CC&d=DD
+
+// 함수형
+const query2 = obj =>
+  Object
+    .entries(obj)
+    .filter(([_, v]) => v !== undefined)
+    .map(([k, v]) => `${k}=${v}`)
+    .reduce((a, b) => `${a}&${b}`);
+
+query2({a: 1, b: undefined, c: 'CC', d: 'DD'});
+// a=1&c=CC&d=DD
+</script>
+
 
 2. ES6+ 기본기
 
