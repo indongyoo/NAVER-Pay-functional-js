@@ -2,19 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>1회</title>
+  <title>1.3.</title>
 </head>
 <body>
 
 <script>
 const {log, clear} = console;
+function* filter(f, iter) {
+  for (const a of iter) if (f(a)) yield a;
+}
+function reduce(f, iter) {
+  let acc = iter.next().value;
+  for (const a of iter) acc = f(acc, a);
+  return acc;
+}
 </script>
 
-1. 들어가며
+8. 이터러블 프로토콜을 익혀야 하는 이유
 
-# 이터러블 프로토콜을 익혀야 하는 이유
-
-## ES6+의 표준 프로토콜
+# ES6+의 표준 프로토콜
 - for...of 문은 이터러블을 순회합니다.
 <script>
   for (const a of [1, 2, 3]) log(a);
@@ -60,7 +66,9 @@ const {log, clear} = console;
   log(iterator.next()); // {value: 30, done: false}
   log(iterator.next()); // {done: true}
 
-  const [h, ...t] = generator();
+  const iter = generator();
+  log(iter[Symbol.iterator]); // f [Symbol.iterator]() { [native code] }
+  const [h, ...t] = iter;
   log(h); // 10
   log(t); // [20, 30]
 </script>
@@ -68,7 +76,7 @@ const {log, clear} = console;
 - 이런 규약을 통칭해 이터러블 프로토콜이라고 하며 이것은 ES6에서 매우 중요한 위치에 있습니다.
 - ES6+ 에서도 이런 규약을 사용하거나 컨셉을 함께하는 규약들이 만들어지고 있습니다.
 
-## 프로그래밍 패러다임
+# 프로그래밍 패러다임
  - 이터러블/이터레이터/제너레이터는 코드를 값으로 다룰 수 있도록 하는 도구입니다.
 <script>
   function myCode1(l) {
@@ -89,11 +97,9 @@ const {log, clear} = console;
   }
 
   function* take(l, iter) {
-    let i = -1;
-    while (++i < l) {
-      const {value, done} = iter.next();
-      if (done) break;
-      yield value;
+    for (const a of iter) {
+      yield a;
+      if (--l == 0) break;
     }
   }
 
@@ -119,14 +125,14 @@ const {log, clear} = console;
 - 문제 해결, 생산성, 안정성은 성공적인 프로그래밍의 핵심적인 지표입니다.
 - 현대 프로그래밍에서 함수형 패러다임은 언어 제약적이지 않습니다.
 
-## 조합성, 재사용성
+# 조합성, 재사용성
 - 코드가 값으로 다뤄 질수 있다는 것은 그 코드가 어떤 '규약'을 지키고 있다는 것입니다.
 - 값으로 다룰 수 있도록 규약이 지켜진 코드는 재사용성이 높습니다.
 - 규약이 지켜진 코드는 다른 코드와의 조합성이 높습니다.
 - 규약이 지켜진 코드는 협업을 용이하게 합니다.
 - 이 규약이 언어의 규약과 일치할 수록 언어와 여러 도구의 도움을 받기 용이합니다.
 
-## 응용력
+# 응용력
 - 추상화가 잘 된 규약은 응용력이 높습니다.
 - 이터러블은 값을 계산하여 세분화해나가면서도 이터러블인 상태를 유지하도록 하여
   추상화 수준을 동일하게 유지하는 아이디어를 가지고 있습니다.
@@ -140,11 +146,26 @@ const {log, clear} = console;
 </script>
 
 - 추상화 단계가 유지되면 여전히 동일한 응용력을 가질 수 있습니다.
+<script>
+  function* map(f, iter) {
+    for (const a of iter) yield f(a);
+  }
+
+  const iter3 = map(a => a.toLowerCase(), myCode2());
+  log(iter3.next()); // {value: "a", done: false}
+  log(iter3.next()); // {value: "b", done: false}
+  log(iter3.next()); // {value: "c", done: false}
+  log(iter3.next()); // {value: "d", done: false}
+
+  const iter4 = map(a => a.toLowerCase(), myCode2());
+  log([...take(2, iter4)].join(' and ')); // a and b
+</script>
+
 - 일반화가 많이 된 규약은 특정 상황에만 잘 대응될 가능성이 높습니다.
 - 소프트웨어의 복잡성이 증가할 수록 특정 상황에 특화된 패러다임보다는
   유연성과 생산성을 함께 높일 수 있는 패러다임이 유리합니다.
 
-## 명령형 vs 함수형
+# 명령형 vs 함수형
 - 명령형 코드는 서로의 코드를 이해하기 어렵습니다.
 <script type="module">
   function sumOdds(arr) {
@@ -158,94 +179,23 @@ const {log, clear} = console;
     return acc;
   }
 
-  sumOdds([1, 2, 3, 4, 5]); // 9
+  log(sumOdds([1, 2, 3, 4, 5])); // 9
 </script>
 
 - 함수형 코드는 이해하기 쉬울 뿐 아니라 '코드를 응용(Applicative)' 할 수 있습니다.
 <script type="module">
-  const sumOdds = arr => arr.filter(a => a % 2).reduce((a, b) => a + b);
+  const sumOdds = arr =>
+    reduce((a, b) => a + b,
+      filter(a => a % 2, arr));
 
-  sumOdds([1, 2, 3, 4, 5]); // 9
+  log(sumOdds([1, 2, 3, 4, 5])) // 9
 </script>
 
-## 결론
+# 결론
 - '이터러블 프로그래밍'이라는 규약을 중심에 두고 팀 작업을 하게 되면,
   구성원 간에 같은 관점을 갖게하여 소통이 용이하며,
   생산성, 조합성, 안정성, 코드 품질 관리의 객관성을 높일 수 있습니다.
 - 팀에서 공유하고 있는 패러다임이 성숙해질수록 높을 효율을 얻을 수 있습니다.
-
-<script>clear()</script>
-
-2. ES6+ 기본기
-
-# 이터러블
-- 이터레이터를 리턴하는 [Symbol.iterator]() 를 가진 값
-<script>
-</script>
-
-# 이터레이터
-- { value, done } 객체를 리턴하는 next() 를 가진 값
-<script>
-</script>
-
-# 제너레이터
-- 이터레이터를 만드는 함수
-- yield 와 return 을 통해 이터레이터의 next()의 결과를 생성
-<script>
-</script>
-
-# well-formed 이터러블
-- iterator1에게 iterator1[Symbol.iterator]() 메서드가 있다.
-- iterator1[Symbol.iterator]() 를 실행했을 때 iterator1를 리턴한다.
-- 만일 iterable1[Symbol.iterator]()를 실행했을 때 iterator1을 리턴한다면
-- iterable1 은 well-formed 이터러블이다.
-<script>
-</script>
-
-# 전개, 나머지, 구조 분해
-<script>
-</script>
-
-3. 함수
-- 일급 함수
-<script>
-</script>
-
-- 고차 함수
-<script>
-</script>
-
-4. map, filter
-<script type="module">
-</script>
-
-5. 이터러블 프로토콜로 다시 만들기
-- map, filter
-- 이터러블 프로토콜의 다형성
-<script type="module">
-</script>
-
-6. 이터러블 프로토콜로 다시 만들기 2
-- L.map
-- L.filter
-<script type="module">
-</script>
-
-7. take 와 range
-- take
-- range
-<script type="module">
-</script>
-
-- L.take
-- L.range
-<script type="module">
-</script>
-
-8. 지연 평가와 제너레이터
-- L.map, L.filter, L.range, take 동작 순서
-<script type="module">
-</script>
 
 </body>
 </html>

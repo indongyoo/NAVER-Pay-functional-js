@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>1회</title>
+</head>
+<body>
+
+<script>
+const {log, clear} = console;
+</script>
+
+1. ES6+ 기본기
+
+# 이터러블
+- 이터레이터를 리턴하는 [Symbol.iterator]() 를 가진 값
+<script>
+</script>
+
+# 이터레이터
+- { value, done } 객체를 리턴하는 next() 를 가진 값
+<script>
+</script>
+
+# 제너레이터
+- 이터레이터를 만드는 함수
+- yield 와 return 을 통해 이터레이터의 next()의 결과를 생성
+<script>
+</script>
+
+# well-formed 이터러블
+- iterator1에게 iterator1[Symbol.iterator]() 메서드가 있다.
+- iterator1[Symbol.iterator]() 를 실행했을 때 iterator1를 리턴한다.
+- 만일 iterable1[Symbol.iterator]()를 실행했을 때 iterator1을 리턴한다면
+- iterable1 은 well-formed 이터러블이다.
+<script>
+</script>
+
+# 전개, 나머지, 구조 분해
+<script>
+</script>
+
+2. 함수
+- 일급 함수
+<script>
+</script>
+
+- 고차 함수
+<script>
+</script>
+
+3. map, filter
+<script type="module">
+</script>
+
+4. 이터러블 프로토콜로 다시 만들기
+- map, filter
+- 이터러블 프로토콜의 다형성
+<script type="module">
+</script>
+
+5. 이터러블 프로토콜로 다시 만들기 2
+- L.map, L.filter
+- map, filter
+<script type="module">
+</script>
+
+6. take 와 range
+- take
+- range
+<script type="module">
+</script>
+
+- L.take, L.range
+- take, range
+<script type="module">
+</script>
+
+</body>
+</html>
