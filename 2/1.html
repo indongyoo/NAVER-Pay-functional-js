@@ -8,6 +8,41 @@
 
 <script>
 const {log, clear} = console;
+  const L = {};
+  L.map = function* (f, iter) {
+    for (const a of iter) {
+      yield f(a);
+    }
+  };
+  L.filter = function* (f, iter) {
+    for (const a of iter) {
+      if (f(a)) yield a;
+    }
+  };
+  L.range = function* (start, stop) {
+    while (start < stop) {
+      yield start++;
+    }
+  };
+  L.take = function* (l, iter) {
+    for (const a of iter) {
+      yield a;
+      if (--l == 0) break;
+    }
+  };
+  function map(l, iter) {
+    return [...L.map(l, iter)];
+  }
+  function filter(l, iter) {
+    return [...L.filter(l, iter)];
+  }
+  function take(l, iter) {
+    return [...L.take(l, iter)];
+  }
+  function range(..._) {
+    return [...L.range(..._)];
+  }
+
 </script>
 
 1. 축약하는 함수 reduce
