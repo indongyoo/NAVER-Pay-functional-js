@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>QnA</title>
+</head>
+<body>
+
+<script>
+const {log, clear} = console;
+var L = {};
+</script>
+
+[QnA] 이터러블 프로토콜 더 자세히 보기
+
+- for...of 가 내부적으로 하는 일
+<script type="module">
+
+const arr = [1, 2, 3];
+for (const a of arr) log(a);
+// 1
+// 2
+// 3
+
+// for...of 가 내부적으로 하는 일
+const iterator = arr[Symbol.iterator]();
+while (true) {
+  const cur = iterator.next();
+  if (cur.done) break;
+  const a = cur.value;
+  log(a);
+}
+// 1
+// 2
+// 3
+
+L.map = function* (f, iterable) {
+//for (const a of iter) {
+//  yield f(a);
+//}
+  const iterator = iterable[Symbol.iterator]();
+  while (true) {
+    const {value, done} = iterator.next();
+    if (done) break;
+    const a = value;
+    yield f(a);
+  }
+};
+</script>
+
+
+- 이터레이터의 next를 호출하는 순서를 더 자세히 알 수 있도록
+  제너레이터 없이 ES5 문법으로 지연 평가 L.range, L.map, L.filter, L.take 구현
+
+<script type="module">
+L.range = function(start, stop) {
+  return {
+    next: function() {
+      return start < stop ?
+        { value: start++, done: false } :
+        { done: true}
+    }
+  }
+};
+L.map = function(f, iterator) {
+  return {
+    next: function() {
+      var cur = iterator.next();
+      return cur.done ?
+        { done: true } :
+        { value: f(cur.value), done: false };
+    }
+  }
+};
+L.filter = function(f, iterator) {
+  return {
+    next: function() {
+      var cur = iterator.next();
+      return cur.done ?
+        { done: true } :
+          f(cur.value) ?
+          { value: cur.value, done: false } :
+          this.next();
+    }
+  }
+};
+function take(l, iterator) {
+  var i = -1, res = [];
+  while (++i < l) {
+    var cur = iterator.next();
+    if (cur.done) break;
+    res.push(cur.value);
+  }
+  return res;
+}
+
+L.fromArray = function(arr) {
+  return L.map(idx => arr[idx], L.range(0, arr.length));
+};
+
+var iter = L.map(a => a + 10, L.range(1, 5));
+console.log(iter.next()); // { value: 11, done: false }
+console.log(iter.next()); // { value: 12, done: false }
+console.log(iter.next()); // { value: 13, done: false }
+console.log(iter.next()); // { value: 14, done: false }
+console.log(iter.next()); // { done: true }
+
+
+var iter2 = L.filter(a => a % 2, L.fromArray([11, 8, 10, 21, 25]));
+console.log(iter2.next()); // { value: 11, done: false }
+console.log(iter2.next()); // { value: 21, done: false }
+console.log(iter2.next()); // { value: 25, done: false }
+console.log(iter2.next()); // { done: true }
+
+console.log(
+  take(2,
+    L.filter(a => a % 2,
+      L.map(a => a + 10,
+        L.range(1, 10)))));
+// [11, 13]
+
+console.log(
+  take(2,
+    L.filter(a => a % 2,
+      L.map(a => a + 10,
+        L.fromArray([11, 8, 10, 21, 25, 24, 28, 27])))));
+// [21, 31]
+</script>
+
+각각의 함수에서 받은 iterator를 누가 먼저 next()를 하는지를 확인하면
+take의 `var cur = iterator.next();` 가 제일 먼저 실행되는 것을 알 수 있습니다.
+
+각각의 함수가 자신이 받은 `iterator.next()`를 연속적으로 실행하면서
+코드 값으로 다루어서 자신이 원하는 로직대로 코드를 제어합니다.
+
+</body>
+</html>
