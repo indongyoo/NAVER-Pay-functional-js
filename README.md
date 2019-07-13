@@ -49,8 +49,15 @@
     - L.filter
     - L.range
     - take, 동작 순서
-8. 이터러블 프로토콜을 익혀야 하는 이유
-9. [QnA] 이터러블 프로토콜 더 자세히 보기
+8. 명령형을 이터러블 프로그래밍으로 전환 1
+    - 홀수 n개 더하기 명령형 코드
+    - if를 filter로
+    - 값 변화 후 변수 할당을 map으로
+    - break를 take로
+    - 합산을 reduce로
+    - 효율 비교하기
+9. 이터러블 프로토콜을 익혀야 하는 이유
+10. [QnA] 이터러블 프로토콜 더 자세히 보기
     - for...of 가 내부적으로 하는 일
     - 이터레이터의 next를 호출하는 순서를 더 자세히 알 수 있도록
     - 제너레이터 없이 ES5 문법으로 지연 평가 L.range, L.map, L.filter, L.take 구현
@@ -60,46 +67,34 @@
     - reduce
     - add
     - count
-2. 명령형을 이터러블 프로그래밍으로 전환
-    - 홀수 n개 더하기 명령형 코드
-    - if를 filter로
-    - 값 변화 후 변수 할당을 map으로
-    - break를 take로
-    - 합산을 reduce로
-    - 효율 비교하기
-3. 함수를 다루는 함수
+    - countBy
+    - groupBy
+2. 함수를 다루는 함수
     - go
     - pipe
     - curry
-4. 2차원 배열 다루기 flat
+3. 2차원 배열 다루기 flat
     - L.flat
-5. 리얼월드
+4. 리얼월드
     - users
     - DOM findAll(sel, els)
+5. 명령형 습관 지우기 - 만능 reduce? No!
+    - reduce(복잡한함수, acc, iter) 보다 reduce(함수, map(함수))
+    - 복잡한 reduce 하나 보다 map + filter + reduce
+    - queryString
+    - join 함수의 다형성
 6. 명령형을 이터러블 프로그래밍으로 전환 2
     - while을 range로
     - 효과를 each로 구분하기
     - 추억의 별 그리기
     - 추억의 구구단
-
-## 3회
-1. reduce 좀 더 익히기
-    - countBy
-    - groupBy
-    - queryString
-2. 명령형 습관 지우기 - 만능 reduce? No!
-    - reduce(복잡한함수, acc, iter) 보다 reduce(함수, map(함수))
-    - 복잡한 reduce 하나 보다 map + filter + reduce
-    - queryString
-    - fromQueryString
-    - join 함수의 다형성
-3. 함수를 설명하는 인자와 리턴 값
+7. 함수를 설명하는 인자와 리턴 값
     - 표기법으로 생각하기
     - 함수 조합으로 생각하기
     - find, some, every
-    - filter + reduce(identity)
-    - 지연 평가 + take를 통한 최적화
-4. 객체를 이터러블 프로그래밍으로 다루기
+    - filter + take + reduce(identity)
+    - 지연 평가를 통한 최적화
+8. 객체를 이터러블 프로그래밍으로 다루기
     - values
     - entries
     - keys
@@ -109,12 +104,12 @@
     - pick
     - indexBy
     - indexBy된 값을 filter하기
-5. 객체지향과 함께 사용하기
+9. 객체지향과 함께 사용하기
     - Map, Set, NodeList
     - Model, Collection 클래스 만들어서 이터러블 프로토콜 지원하기
     - Product, Products - 메서드를 함수형으로 구현하기
 
-## 4회
+## 3회
 1. 장바구니 만들기
     - ES6 템플릿 리터럴
     - 템플릿 리터럴과 표현식, 평가, 함수
@@ -126,7 +121,7 @@
     - 백엔드/프론트엔드 장바구니 가격 계산 로직 공유
     - 결제 금액 조작 서버 검증
 
-## 5회
+## 4회
 1. 비동기/동시성 프로그래밍
     - callback과 Promise
     - 비동기를 값으로 만드는 Promise
@@ -144,7 +139,7 @@
     - 즉시 병렬적으로 평가하기 - C.map, C.filter
     - 즉시, 지연, Promise, 병렬적 조합하기
 
-## 6회
+## 5회
 1. 시간을 이터러블로 다루기
     - range와 take의 재해석
     - takeWhile, takeUntil
@@ -166,9 +161,7 @@
     - 상위 스코프 변수를 사용하는 함수와 아닌 함수들 쪼개기
     - DOM을 다루는 고차 함수
 
-# 2차 심화 과정 상세 (draft)
-
-## 1회
+## 6회
 1. 안전한 합성
     - map으로 합성하기
     - find 대신 filter + take
@@ -183,7 +176,9 @@
     - Promise
     - async/await/try/catch
 
-## 2회
+# 2차 심화 과정 상세 (draft)
+
+## 1회
 1. 데이터 베이스
     - SQL 인젝션을 완벽히 막으려면?
     - SQL 함수형으로 다루기
@@ -195,7 +190,7 @@
     - 동시/병렬성 프로그래밍에서의 에러 핸들링/트랜젝션 문제 해결
     - async/await + try/catch 와 트랜잭션 조합
 
-## 3회
+## 2회
 1. 함수형 데이터 핸들링
     - SNS 데이터 WHERE IN 쿼리 후 groupBy, indexBy로 병합
     - rows to CSV, CSV to rows 함수형으로 다루기
@@ -207,7 +202,7 @@
     - Multiple UPDATE
     - Multiple DELETE
 
-## 4회
+## 3회
 1. 중첩 데이터 다루기
     - 깊은 값 조회
     - 깊은 값 변경
@@ -218,19 +213,19 @@
 
 3. NoSQL을 잘 다루는 비결
 
-## 5회
+## 4회
 1. 백엔드 Node.js + 프론트엔드 VanillaJS 프로젝트 세팅
 2. ES6 Module
 3. 트랜스파일링 + 번들링
 4. npm modules + 내부 라이브러리 관리
 
-## 6회
+## 5회
 1. 백엔드와 프론트엔드 코드 공유
 2. JSON 기반 프로그래밍의 장점
 3. 서버사이드 렌더링
 4. API 서버
 
-## 7회 ~ 9회
+## 6회 ~ 8회
 1. 코드 리뷰
 2. N pay 최적화 보일러 플레이트 논의 및 적용
 3. 앱 개발

@@ -2,79 +2,66 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>2회</title>
+  <title>2.1</title>
 </head>
 <body>
 
 <script>
 const {log, clear} = console;
-  const L = {};
-  L.map = function* (f, iter) {
-    for (const a of iter) {
-      yield f(a);
-    }
-  };
-  L.filter = function* (f, iter) {
-    for (const a of iter) {
-      if (f(a)) yield a;
-    }
-  };
-  L.range = function* (start, stop) {
-    while (start < stop) {
-      yield start++;
-    }
-  };
-  L.take = function* (l, iter) {
-    for (const a of iter) {
-      yield a;
-      if (--l == 0) break;
-    }
-  };
-  function map(l, iter) {
-    return [...L.map(l, iter)];
+const L = {};
+L.map = function* (f, iter) {
+  for (const a of iter) {
+    yield f(a);
   }
-  function filter(l, iter) {
-    return [...L.filter(l, iter)];
+};
+L.filter = function* (f, iter) {
+  for (const a of iter) {
+    if (f(a)) yield a;
   }
-  function take(l, iter) {
-    return [...L.take(l, iter)];
+};
+L.range = function* (start, stop) {
+  while (start < stop) {
+    yield start++;
   }
-  function range(..._) {
-    return [...L.range(..._)];
+};
+L.take = function* (l, iter) {
+  for (const a of iter) {
+    yield a;
+    if (--l == 0) break;
   }
-
+};
+function map(..._) {
+  return [...L.map(..._)];
+}
+function filter(..._) {
+  return [...L.filter(..._)];
+}
+function take(..._) {
+  return [...L.take(..._)];
+}
+function range(..._) {
+  return [...L.range(..._)];
+}
 </script>
 
 1. 축약하는 함수 reduce
 - reduce
 - add
 - count
+- countBy
+- groupBy
 
-2. 명령형을 이터러블 프로그래밍으로 전환
-- 홀수 n개 더하기 명령형 코드
-- if를 filter로
-- 값 변화 후 변수 할당을 map으로
-- break를 take로
-- 합산을 reduce로
-- 효율 비교하기
-
-3. 함수를 다루는 함수
+2. 함수를 다루는 함수
 - go
 - pipe
 - curry
 
-4. 2차원 배열 다루기 flat
+3. 2차원 배열 다루기 flat
 - L.flat
 
-5. 리얼월드
+4. 리얼월드
 - users
 - DOM findAll(sel, els)
-
-6. 명령형을 이터러블 프로그래밍으로 전환 2
-- while을 range로
-- 효과를 each로 구분하기
-- 추억의 별 그리기
-- 추억의 구구단
 
 </body>
 </html>
