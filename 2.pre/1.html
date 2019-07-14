@@ -59,10 +59,35 @@ const add = (a, b) => a + b;
 - reduce
 - add
 <script>
-</script>
+function reduce(f, acc, iter) {
+  if (arguments.length == 2) {
+    iter = acc[Symbol.iterator]();
+    acc = iter.next().value;
+  }
+  for (const a of iter) {
+    acc = f(acc, a);
+  }
+  return acc;
+}
+log(reduce(add, 10, [1, 2, 3]));
+// add(add(add(10, 1), 2), 3);
 
+log(reduce(add, [1, 2, 3, 4]));
+log(reduce(add, 1, [2, 3, 4]));
+// add(add(add(1, 2), 3), 4);
+</script>
 - count
 <script>
+const inc = (obj, k) => {
+  obj[k] = (obj[k] || 0) + 1;
+  return obj;
+};
+const count = iter => reduce(inc, {}, iter);
+log(count([1, 2, 3, 4, 5, 1, 2, 5, 5]));
+// {1: 2, 2: 2, 3: 1, 4: 1, 5: 3}
+
+// log(count(document.querySelectorAll('*')));
+// 실패
 </script>
 
 - countByKey
@@ -74,10 +99,27 @@ const users = [
   { name: 'ab', age: 18 },
   { name: 'bB', age: 18 }
 ];
-</script>
 
+const countByKey = (k, iter) =>
+  reduce((obj, v) => inc(obj, v[k]), {}, iter);
+
+log(countByKey('name', users));
+log(countByKey('age', users));
+</script>
 - 값 보다 함수, countBy
+
 <script>
+const countBy = (f, iter) =>
+  reduce((obj, v) => inc(obj, f(v)), {}, iter);
+
+log(countBy(u => u.name, users));
+log(countBy(u => u.age, users));
+log(countBy(u => u.name[0], users));
+log(countBy(u => u.name.toUpperCase(), users));
+log(countBy(u => u.age - u.age % 10, users));
+
+log(countBy(a => a, [1,2,3,3,3,4,4]));
+log(countBy(a => a % 2 ? 'odd' : 'even', [1,2,3,3,3,4,4]));
 </script>
 
 - groupBy
