@@ -11,28 +11,165 @@
 5. 명령형 습관 지우기 - 만능 reduce? No!
 
 - reduce(복잡한함수, acc, iter) 보다 reduce(함수, map(함수))
+<script>
+const users = [
+  { name: 'AA', age: 35 },
+  { name: 'BB', age: 26 },
+  { name: 'CC', age: 28 },
+  { name: 'DD', age: 34 },
+  { name: 'EE', age: 23 }
+];
+log(reduce((total, u) => total + u.age, 0, users));
+
+log(reduce(add, L.map(u => u.age, users)));
+
+const totalAge = pipe(
+  L.map(u => u.age),
+  reduce(add));
+
+</script>
+
 - 복잡한 reduce 하나 보다 map + filter + reduce
+<script>
+log(reduce((total, u) => {
+  if (u.age < 30) return total + u.age;
+  return total;
+}, 0, users));
+
+go(
+  users,
+  L.filter(u => u.age < 30),
+  L.map(u => u.age),
+  reduce(add),
+  log);
+</script>
+
 - queryString
+<script>
+const obj = {
+  search: undefined,
+  type: 'notice',
+  offset: 10,
+  limit: 10
+};
+// type=notice&offset=10&limit=10
+log(reduce((qs, [k, v]) => {
+  if (v !== undefined) {
+    if (qs != '') qs += '&';
+    qs += `${k}=${v}`;
+  }
+  return qs;
+}, '', Object.entries(obj)));
+</script>
+
 - 함수형 사고
+<script>
+// { search: undefined, type: 'notice', offset: 10, limit: 10 };
+// [['search', undefined], ['type', 'notice'] ...]
+// [['type', 'notice'], ['offset', ..] ...]
+// ['type=notice', 'offset=10' ...]
+// 'type=notice&offset=10'
+
+go(obj,
+  Object.entries,
+  L.filter(([_, v]) => v !== undefined),
+  L.map(([k, v]) => `${k}=${v}`),
+  reduce((a, b) => `${a}&${b}`),
+  log);
+</script>
+
 - join 함수의 다형성
+<script>
+const join = curry((sep, iter) =>
+  reduce((a, b) => `${a}${sep}${b}`, iter));
+
+go(obj,
+  Object.entries,
+  L.filter(([_, v]) => v !== undefined),
+  L.map(join('=')),
+  join('&'),
+  log);
+
+log( join('--', function* () {
+  yield 10;
+  if (false) yield 20;
+  yield 30;
+} ()) );
+</script>
 
 6. 명령형을 이터러블 프로그래밍으로 전환 2
 - while을 range로
+<script>
+clear();
+
+const iter = go([1,2,3,4], L.filter(a => a % 2), take(2));
+for (const a of iter) {
+  log(a);
+}
+
+let start = 1, stop = 5;
+while (start < stop) {
+  log(start);
+  start += 2;
+}
+
+for (const a of L.range(1, 5, 2)) {
+  log(a);
+}
+</script>
+
 - 효과를 each로 구분하기
+<script type="module">
+const each = function(f, iter) {
+  for (const a of iter) f(a);
+  return iter;
+};
+let start = 1, stop = 5;
+while (start < stop) {
+  log(start);
+  start += 2;
+}
+each(log, L.range(1, 5, 2));
+clear();
+</script>
+
 - 추억의 별 그리기
+<script type="module">
+// *
+// **
+// ***
+// ****
+go(
+  range(1, 5),
+  map(n => range(0, n)),
+  map(map(_ => '*')),
+  map(reduce(add)),
+  reduce((a, b) => `${a}\n${b}`),
+  log);
+
+go(
+  range(1, 5),
+  map(n => go(
+    range(0, n),
+    map(_ => '*'),
+    reduce((a, b) => `${a}${b}`)
+  )),
+  reduce((a, b) => `${a}\n${b}`),
+  log);
+</script>
+
 - 추억의 구구단
-
-7. 함수를 설명하는 인자와 리턴 값
-- 표기법으로 생각하기
-- 함수 조합으로 생각하기, 연산자 보다 함수
-- find, some, every
-- filter + take + reduce
-- 지연 평가를 통한 최적화
-- 함수형은 break로 최적화하지 않는 것
-
-8. 탈 언어적인 사고
-- 언어 의존적인 사고를 줄이는 것
-- 타입 의존적인 사고를 줄이는 것
+<script type="module">
+go(
+  range(2, 10),
+  map(a => go(
+    range(1, 10),
+    map(b => `${a}x${b}=${a*b}`),
+    join('\n'),
+  )),
+  join('\n\n'),
+  log);
+</script>
 
 </body>
 </html>

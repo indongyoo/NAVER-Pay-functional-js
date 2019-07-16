@@ -59,6 +59,9 @@ L.range = function(start, stop) {
       return start < stop ?
         { value: start++, done: false } :
         { done: true}
+    },
+    [Symbol.iterator]() {
+      return this;
     }
   }
 };

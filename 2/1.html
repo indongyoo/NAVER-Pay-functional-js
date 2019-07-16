@@ -9,32 +9,35 @@
 <script>
 const {log, clear, dir} = console;
 
+const curry = f => (a, ..._) =>
+  _.length ? f(a, ..._) : (..._) => f(a, ..._);
+
 const L = {};
 
-L.map = function* (f, iter) {
+L.map = curry(function* (f, iter) {
   for (const a of iter) {
     yield f(a);
   }
-};
+});
 
-L.filter = function* (f, iter) {
+L.filter = curry(function* (f, iter) {
   for (const a of iter) {
     if (f(a)) yield a;
   }
-};
+});
 
-L.range = function* (start, stop) {
+L.range = curry(function* (start, stop) {
   while (start < stop) {
     yield start++;
   }
-};
+});
 
-L.take = function* (l, iter) {
+L.take = curry(function* (l, iter) {
   for (const a of iter) {
     yield a;
     if (--l == 0) break;
   }
-};
+});
 
 function map(..._) {
   return [...L.map(..._)];
@@ -44,9 +47,9 @@ function filter(..._) {
   return [...L.filter(..._)];
 }
 
-function take(..._) {
+const take = curry(function(..._) {
   return [...L.take(..._)];
-}
+});
 
 function range(..._) {
   return [...L.range(..._)];
@@ -58,11 +61,41 @@ const add = (a, b) => a + b;
 1. 축약하는 함수 reduce
 - reduce
 - add
+- array 보다 iterable
 <script>
+function* empty() {}
+function toIer(iter) {
+  return iter && iter[Symbol.iterator] ? iter[Symbol.iterator]() : empty();
+}
+const reduce = curry(function(f, acc, iter) {
+  if (arguments.length == 2) {
+    iter = toIer(acc);
+    acc = iter.next().value;
+  }
+  for (const a of iter) {
+    acc = f(acc, a);
+  }
+  return acc;
+});
+log(reduce(add, 0, [1, 2, 3]));
+log(reduce(add, [1, 2, 3]));
+log(reduce(add, new Set([1, 2, 3])));
+log(reduce(add, null));
+// add(add(add(0, 1), 2), 3);
+// 6
 </script>
 
 - count
 <script>
+const incKey = (obj, key) => {
+  obj[key] = (obj[key] || 0) + 1;
+  return obj;
+};
+
+const count = iter => reduce(incKey, {}, iter);
+
+log(count([1, 2, 3, 3, 4, 4, 4]));
+// { 1: 1, 2: 1, 3: 2, 4: 3 }
 </script>
 
 - countByKey
@@ -74,22 +107,146 @@ const users = [
   { name: 'ab', age: 18 },
   { name: 'bB', age: 18 }
 ];
+const countByKey = (key, iter) =>
+  reduce((obj, v) => incKey(obj, v[key]), {}, iter);
+
+log(countByKey('age', users));
+log(countByKey('name', users));
 </script>
 
 - 값 보다 함수, countBy
 <script>
+const countBy = (f, iter) =>
+  reduce((obj, v) => incKey(obj, f(v)), {}, iter);
+
+log(countBy(u => u.age, users));
+log(countBy(u => u.age - u.age % 10, users));
+log(countBy(u => u.name, users));
+log(countBy(u => u.name.toUpperCase(), users));
 </script>
 
 - groupBy
+<script>
+const groupBy = (f, iter) => reduce((group, v) => {
+  const k = f(v);
+  group[k] = group[k] || [];
+  group[k].push(v);
+  return group;
+}, {}, iter);
+log(groupBy(a => a % 2 ? 'odds' : 'evens', [1, 2, 3, 4, 5, 6, 7]));
+
+log(
+  groupBy(u => u.age,
+    users));
+
+const getAges = users => map(u => u.age, users);
+clear();
+</script>
 
 2. 함수를 다루는 함수
 - go
+<script>
+const go = (a, ...fs) =>
+  reduce((a, f) => f(a), a, fs);
+
+go(
+  0,
+  a => a + 1,
+  a => a + 10,
+  a => a + 100,
+  log); // 111
+</script>
+
 - pipe
+<script>
+const pipe = (f, ...fs) => (...args) => go(f(...args), ...fs);
+
+// const pipe = (f, ...fs) =>
+//   (...args) =>
+//     reduce((a, f) => f(a), f(...args), fs)
+
+const f1 = pipe(
+  (a, b) => a + b,
+  a => a + 10,
+  a => a + 100);
+
+// const f1 = a => go(a,
+//   a => a + 1,
+//   a => a + 10,
+//   a => a + 100);
+
+log(f1(0, 1000)); // 1110
+clear();
+</script>
+
 - curry
+<script type="module">
+
+// function curry(f) {
+//   return function(a, ..._) {
+//     if (_.length) return f(a, ..._);
+//     return function(..._) {
+//       return f(a, ..._);
+//     }
+//   }
+// }
+const add = curry((a, b) => a + b);
+const add10 = add(10);
+log(add10(5));
+log(add10(4));
+log(add(10)(4));
+log(add(10, 10));
+
+log(reduce(add,
+  L.take(2,
+    L.map(a => a * a,
+      L.filter(a => a % 2, [1, 2, 3, 4, 5])))));
+
+go([1, 2, 3, 4, 5],
+  L.filter(a => a % 2),
+  L.map(a => a * a),
+  L.take(2),
+  reduce(add),
+  log);
+clear();
+</script>
+
 
 3. 2차원 배열 다루기 flat
 - L.flat
 <script>
+const isIterable = iter => iter && iter[Symbol.iterator];
+
+L.flat = function* (iter) {
+  for (const a of iter) {
+    if (isIterable(a)) {
+      yield* a;
+    } else {
+      yield a;
+    }
+  }
+};
+
+function flat(iter) {
+  return [...L.flat(iter)];
+}
+
+go([[1, 2], [3, 4], [5, 6]],
+  L.flat,
+  L.filter(a => a % 2),
+  L.map(a => a * a),
+  L.take(2),
+  reduce(add),
+  log);
+
+// const iter = L.flat([[1, 2], [3, 4], [5, 6]]);
+// log(iter.next());
+// log(iter.next());
+// log(iter.next());
+// log(iter.next());
+// log(iter.next());
+// log(iter.next());
+// [1, 2, 3, 4, 5, 6]
 </script>
 
 4. 리얼월드
@@ -112,11 +269,62 @@ const users = [
     { name: 'd3', age: 11 }, { name: 'd4', age: 7 }
   ] }
 ];
+
+go(users,
+  L.map(u => u.family),
+  L.flat,
+  L.filter(u => u.age < 20),
+  L.map(u => u.age),
+  L.take(3),
+  reduce(add),
+  log);
+
+let limit = 3;
+for (let i = 0; i < users.length; i++) {
+  let res = 0;
+  const user = users[i];
+  for (let j = 0; j < user.family; j++) {
+    const user2 = user.family[j];
+    if (user2.age < 20) {
+      res += user2.age;
+      if (--limit == 0) break;
+    }
+  }
+  log(res);
+}
 </script>
+
+<div class="container">
+  <div class="product">
+    <div class="color"></div>
+    <div class="color"></div>
+    <div class="color"></div>
+  </div>
+  <div class="product">
+    <div class="color"></div>
+    <div class="color"></div>
+  </div>
+  <div class="product">
+    <div class="color"></div>
+    <div class="color"></div>
+  </div>
+</div>
 
 - DOM findAll(sel, els)
 <script type="module">
+// document.querySelectorAll('.base_product');
+
+const findAll = (sel, iter) => go(
+  iter,
+  L.map(el => el.querySelectorAll(sel)),
+  flat);
+
+log(
+  findAll('.color', document.querySelectorAll('.product')));
 </script>
+
+
+
 
 </body>
 </html>
