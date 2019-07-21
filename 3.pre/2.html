@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3.2</title>
+</head>
+<body>
+
+<script src="fx.js"></script>
+
+2. 객체를 이터러블 프로그래밍으로 다루기
+- values
+- keys
+- entries
+<script type="module">
+L.keys = function* (obj) {
+  for (const k in obj) yield k;
+};
+L.values = obj => L.map(k => obj[k], L.keys(obj));
+L.entries = obj => L.map(k => [k, obj[k]], L.keys(obj));
+const keys = pipe(L.keys, takeAll);
+const values = pipe(L.values, takeAll);
+const entries = pipe(L.entries, takeAll);
+
+log(entries({a: 1, b: 2, c: 3}));
+</script>
+
+- 어떤 값이든 이터러블 프로그래밍으로 다루기 - 제너레이터의 다형성
+<script type="module">
+go(
+  {a: 1, b: 2, c: 3},
+  L.values,
+  reduce(add),
+  log);
+
+go(
+  {aa: 35, bb: 27, cc: 40, dd: 22, ee: 26},
+  L.entries,
+  L.filter(([_, age]) => age < 30),
+  map(([_, age]) => age),
+  reduce(add),
+  log);
+</script>
+
+- fromEntries, 코드에서 특정 도메인이 사라질 때
+<script type="module">
+const fromEntries = pipe(
+  L.map(([k, v]) => ({[k]: v})),
+  reduce(Object.assign));
+
+go(
+  {aa: 35, bb: 27, cc: 40, dd: 22, ee: 26},
+  L.entries,
+  L.filter(([_, age]) => age < 30),
+  fromEntries,
+  log);
+
+log(Object.fromEntries([['bb', 27], ['dd', 22], ['ee', 26]]));
+
+log(fromEntries(L.take(2, function*() {
+  log(1);
+  yield ['bb', 27];
+  log(2);
+  yield ['dd', 22];
+  log(3);
+  yield ['ee', 26];
+} ())));
+</script>
+
+- mapObject
+- pick
+<script type="module">
+const pick = (ks, obj) =>
+  reduce((obj2, k) => (obj2[k] = obj[k], obj2), {}, ks);
+
+log(pick(['a', 'c'], {a: 1, b: 2, c: 3, d: 4}));
+</script>
+
+- indexBy
+- indexBy된 값을 filter하기
+
+3. 객체지향과 함께 사용하기
+- Map, Set, NodeList
+- Model, Collection 클래스 만들어서 이터러블 프로토콜 지원하기
+- Product, Products - 메서드를 함수형으로 구현하기
+
+</body>
+</html>

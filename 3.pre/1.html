@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3.1</title>
+</head>
+<body>
+
+<script src="fx.js"></script>
+
+1. 함수를 조합하기
+
+- 함수 조합으로 생각하기, 연산자 보다 함수
+<script type="module">
+const takeAll = iter => [...iter];
+const map = curry(pipe(L.map, takeAll));
+</script>
+
+- find, some, every, takeUntil
+- filter + take + reduce
+- 지연 평가를 통한 최적화
+<script type="module">
+// function find(f, iter) {
+//   for (const a of iter) {
+//     if (f(a)) return a;
+//   }
+// }
+
+const identity = a => a;
+const head = pipe(L.take(1), reduce(identity));
+const find = pipe(L.filter, head);
+
+log(find(a => a > 3, [1, 2, 3, 4, 5, 6, 7, 8]));
+
+const or = (a, b) => a || b;
+
+const and = (a, b) => a && b;
+
+const not = a => !a;
+
+L.takeUntil = curry(function* (f, iter) {
+  for (const a of iter) {
+    yield a;
+    if (f(a)) break;
+  }
+});
+
+const baseBoolAll = (f1, f2) => curry(pipe(
+  L.map,
+  L.takeUntil(f1),
+  reduce(f2),
+  Boolean));
+
+const every = baseBoolAll(not, and);
+
+log(every(a => a < 7)([1, 2, 3, 4, 5, 6]));
+log(every(a => a < 6, [1, 2, 3, 4, 5, 6]));
+log(every(a => a < 5, [1, 2, 3, 4, 5, 6]));
+log(every(a => a < 2, [1, 2, 3, 4, 5, 6]));
+log(every(a => a < 2, []));
+
+const some = baseBoolAll(Boolean, or);
+
+log(some(a => a > 2 && a % 2, [1, 2, 3, 4, 5, 6]));
+log(some(a => a > 6 && a % 2, [1, 2, 3, 4, 5, 6]));
+log(some(a => a > 2 && a % 2, []));
+</script>
+
+- 언어 의존적인 사고를 줄이는 것
+
+<script type="module">
+const some1 = curry(pipe(
+  L.map,
+  L.takeUntil(Boolean),
+  reduce(or),
+  Boolean));
+
+log(some1(a => a > 2 && a % 2, [1, 2, 3, 4, 5, 6]));
+log(some1(a => a > 6 && a % 2, [1, 2, 3, 4, 5, 6]));
+log(some1(a => a > 2 && a % 2, []));
+
+const some2 = pipe(
+  L.filter,
+  take(1),
+  arr => arr.length,
+  Boolean);
+
+log(some2(a => a > 2 && a % 2, [1, 2, 3, 4, 5, 6]));
+log(some2(a => a > 6 && a % 2, [1, 2, 3, 4, 5, 6]));
+log(some2(a => a > 2 && a % 2, []));
+
+const some3 = pipe(
+  L.map,
+  L.filter(identity),
+  head,
+  Boolean);
+
+log(some3(a => a > 2 && a % 2, [1, 2, 3, 4, 5, 6]));
+log(some3(a => a > 6 && a % 2, [1, 2, 3, 4, 5, 6]));
+log(some3(a => a > 2 && a % 2, []));
+</script>
+
+</body>
+</html>
