@@ -9,20 +9,220 @@
 <script src="fx.js"></script>
 
 2. 객체를 이터러블 프로그래밍으로 다루기
+- keys
 - values
 - entries
-- keys
+<script type="module">
+L.keys = function* (obj) {
+  for (const k in obj) yield k;
+};
+// L.values = function* (obj) {
+//   for (const k in obj) yield obj[k];
+// };
+L.values = obj => L.map(k => obj[k], L.keys(obj));
+L.entries = obj => L.map(k => [k, obj[k]], L.keys(obj));
+
+log(takeAll(L.keys({a: 1, b: 2, c: 3})));
+// ['a', 'b', 'c']
+log(takeAll(L.values({a: 1, b: 2, c: 3})));
+const iter = L.values({a: 1, b: 2, c: 3});
+log(iter.next());
+log(iter.next());
+log(takeAll(L.entries({a: 1, b: 2, c: 3})));
+clear();
+</script>
+
 - 어떤 값이든 이터러블 프로그래밍으로 다루기 - 제너레이터의 다형성
 - fromEntries, 코드에서 특정 도메인이 사라질 때
+<script type="module">
+const users = {aa: 25, bb: 32, cc: 28, dd: 35};
+go(users,
+  L.values,
+  L.filter(age => age >= 30),
+  reduce(add),
+  log);
+
+go(users,
+  L.entries,
+  L.filter(([_, age]) => age >= 30),
+  L.map(([_, age]) => age),
+  reduce(add),
+  log);
+
+const fromEntries = pipe(
+  L.map(([k, v]) => ({[k]: v})),
+  reduce(Object.assign));
+
+log(fromEntries([['a', 1], ['c', 2]]));
+
+go(users,
+  L.entries,
+  L.filter(([_, age]) => age >= 30),
+  fromEntries,
+  log)
+// {bb: 32, dd: 35}
+</script>
+
 - mapObject
+<script type="module">
+const mapObject = (f, iter) => go(
+  iter,
+  L.entries,
+  map(([k, v]) => [k, f(v)]),
+  fromEntries);
+
+log(mapObject(a => a + 10, {a: 1, b: 2, c: 3}));
+</script>
+
 - pick
+<script type="module">
+const pick = (ks, obj) => go(
+  ks,
+  map(k => [k, obj[k]]),
+  fromEntries);
+
+log(pick(['c', 'd'], {a: 1, b: 2, c: 3, d: 4}));
+clear();
+</script>
+
 - indexBy
+<script type="module">
+const users = [
+  { id: 5, age: 5 },
+  { id: 7, age: 10 },
+  { id: 8, age: 12 },
+  { id: 19, age: 28 },
+];
+// { 5: { id: 5, age: 5 }, 7: { id: 7, age: 10 } ... }
+
+const indexBy = curry((f, iter) =>
+  reduce((indexed, v) => {
+    const k = f(v);
+    indexed[k] = v;
+    return indexed;
+  }, {}, iter));
+
+const users2 = indexBy(u => u.id, users);
+
+const users3 = go(
+  users2,
+  L.entries,
+  filter(([_, u]) => u.age < 20),
+  fromEntries);
+
+log(users2, users3);
+clear();
+</script>
+
 - indexBy된 값을 filter하기
 
 3. 객체지향과 함께 사용하기
 - Map, Set, NodeList
+<script type="module">
+const m = new Map();
+m.set('a', 1);
+m.set('b', 2);
+m.set('c', 3);
+m.set('d', 4);
+
+// const iter = m[Symbol.iterator]();
+// log(iter.next());
+// log(iter.next());
+// log(iter.next());
+
+const iter = m.values();
+log(iter.next());
+log(iter.next());
+log(iter.next());
+log(iter.next());
+
+go(
+  m.values(),
+  reduce(add),
+  log);
+
+go(
+  m,
+  filter(([_, v]) => v % 2),
+  map(([k, v]) => [k, v * 10]),
+  entries => new Map(entries),
+  log);
+
+// const m2 = new Map();
+// for (const k of m.keys()) {
+//   m2.set(k, m.get(k) * 10);
+// }
+//
+// log(m);
+// log(m2);
+clear();
+</script>
+
 - Model, Collection 클래스 만들어서 이터러블 프로토콜 지원하기
 - Product, Products - 메서드를 함수형으로 구현하기
+
+<script type="module">
+class Model {
+  constructor(attrs = {}) {
+    this._attrs = attrs;
+  }
+  set(k, v) {
+    this._attrs[k] = v;
+    return this;
+  }
+  get(k) {
+    return this._attrs[k];
+  }
+}
+
+// map(obj => obj.a, [{a: 1}, {a: 2}])
+
+class Collection {
+  constructor(models = []) {
+    this._models = models;
+  }
+  at(idx) {
+    return this._models[idx];
+  }
+  add(model) {
+    this._models.push(model);
+    return this;
+  }
+  [Symbol.iterator]() {
+    return this._models[Symbol.iterator]();
+  }
+}
+class Product extends Model {}
+class Products extends Collection {
+  totalPrice() {
+    return go(this,
+      L.map(p => p.get('price')),
+      reduce(add));
+  }
+}
+
+const products = new Products();
+products.add(new Product({ name: 'aa', price: 10000 }));
+products.add(new Product({ name: 'bb', price: 15000 }));
+products.add(new Product({ name: 'cc', price: 20000 }));
+log(products.totalPrice());
+
+// const c = new Collection();
+// c.add(new Model({a: 1}));
+// c.add(new Model({a: 2}));
+// c.add(new Model({a: 3}));
+
+/*go(
+  c,
+  filter(m => m.get('a') % 2),
+  map(m => m.get('a')),
+  reduce(add),
+  log);*/
+</script>
+
+
+
+
 
 </body>
 </html>

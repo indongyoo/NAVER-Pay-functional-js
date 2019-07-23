@@ -11,10 +11,96 @@
 1. 함수를 조합하기
 
 - 함수 조합으로 생각하기, 연산자 보다 함수
+<script >
+const takeAll = iter => [...iter];
+// const map = curry(function (..._) {
+//   return [...L.map(..._)];
+// });
+// map = takeAll . L.map
+// f1 = f.g
+// f(g(x)) = f1(x)
+// const map = pipe(L.map, takeAll);
+// log(map(a => a * 10, [1,2,3]));
+clear();
+</script>
+
 - find, some, every, takeUntil
-- filter + take + reduce
+- map + filter + take + reduce
 - 지연 평가를 통한 최적화
+<script type="module">
+// function find(f, iter) {
+//   for (const a of iter) {
+//     if (f(a)) return a;
+//   }
+// }
+
+const identity = a => a;
+
+const head = pipe(L.take(1), reduce(identity));
+
+const find = curry(pipe(L.filter, head));
+
+log(head([2,3,4,5,6]));
+
+log(find(a => a > 3, [1,2,3,4,5,6]));
+log(find(a => a > 3)([1,2,3,4,5,6]));
+
+L.takeUntil = curry(function* (f, iter) {
+  for (const a of iter) {
+    yield a;
+    if (f(a)) break;
+  }
+});
+
+const or = (a, b) => a || b;
+
+const some = pipe(
+  L.map,
+  L.takeUntil(Boolean),
+  reduce(or),
+  Boolean);
+
+log(some(a => a > 6, [1, 2, 3, 4, 5, 6]));
+// false
+log(some(a => a > 2, [1, 2, 3, 4, 5, 6]));
+// true
+
+const not = a => !a;
+
+const and = (a, b) => a && b;
+
+const every = pipe(
+  map,
+  L.takeUntil(not),
+  reduce(and),
+  Boolean);
+
+log(every(a => a % 2 == 1, [1, 3, 5, 7]));
+// true
+log(every(a => a % 2 == 0, [1, 3, 4, 7]));
+// false
+log(every(a => a % 2, []));
+// false
+clear();
+</script>
+
 - 언어 의존적인 사고를 줄이는 것
+
+<script type="module">
+const some1 = pipe(
+  L.map,
+  L.takeUntil(Boolean),
+  reduce(or),
+  Boolean);
+
+const some2 = pipe(
+  L.filter,
+  take(1),
+  arr => arr.length > 0);
+
+log(some2(a => a > 2, [1, 2, 3, 4, 5, 6]));
+// true
+</script>
 
 </body>
 </html>

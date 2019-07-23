@@ -17,11 +17,34 @@ const products = [
   { name: '핸드폰케이스', price: 15000, quantity: 3, is_selected: true },
   { name: '후드티', price: 30000, quantity: 4, is_selected: false },
   { name: '바지', price: 25000, quantity: 5, is_selected: false }
-]
+];
+
+const sum = reduce(add);
+const sumMap = curry(pipe(L.map, sum));
+
+const Product = {};
+
+Product.totalQuantity = sumMap(p => p.quantity);
+
+Product.totalPrice = sumMap(p => p.price);
+
+Product.totalQuantitySelected = pipe(
+  L.filter(p => p.is_selected),
+  sumMap(p => p.quantity));
+
+Product.totalPriceSelected = pipe(
+  L.filter(p => p.is_selected),
+  sumMap(p => p.price));
+
+log(Product.totalQuantity(products));
+log(Product.totalPrice(products));
+log(Product.totalQuantitySelected(products));
+log(Product.totalPriceSelected(products));
 </script>
 
 - 복잡한 장바구니
 <script type="module">
+clear();
 const products = [
   {
     name: '반팔티', price: 15000, is_selected: true,
@@ -48,6 +71,32 @@ const products = [
     ]
   }
 ];
+
+const totalPrice = pipe(
+  map(p => map(o => (p.price + o.price) * o.quantity, p.options)),
+  flat,
+  sum);
+
+log(totalPrice(products));
+
+const totalQuantity = pipe(
+  map(p => p.options),
+  flat,
+  sumMap(o => o.quantity));
+
+log(totalQuantity(products));
+
+go(
+  products,
+  L.filter(p => p.is_selected),
+  totalQuantity,
+  log);
+
+go(
+  products,
+  L.filter(p => p.is_selected),
+  totalPrice,
+  log);
 </script>
 
 5. JSON 기반 프로그래밍의 장점

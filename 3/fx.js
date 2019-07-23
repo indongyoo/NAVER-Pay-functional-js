@@ -7,6 +7,12 @@ const isIterable = iter => iter && iter[Symbol.iterator];
 
 const add = (a, b) => a + b;
 
+const or = (a, b) => a || b;
+
+const not = a => !a;
+
+const and = (a, b) => a && b;
+
 function* empty() {}
 
 function toIer(iter) {
@@ -23,6 +29,8 @@ const reduce = curry(function(f, acc, iter) {
   }
   return acc;
 });
+
+const takeAll = iter => [...iter];
 
 const incKey = (obj, key) => {
   obj[key] = (obj[key] || 0) + 1;
@@ -47,6 +55,13 @@ const pipe = (f, ...fs) =>
     go(f(...args), ...fs);
 
 const L = {};
+
+L.takeUntil = curry(function* (f, iter) {
+  for (const a of iter) {
+    yield a;
+    if (f(a)) break;
+  }
+});
 
 L.map = curry(function* (f, iter) {
   for (const a of iter) {
@@ -84,6 +99,13 @@ L.flat = function* (iter) {
   }
 };
 
+L.keys = function* (obj) {
+  for (const k in obj) yield k;
+};
+
+L.values = obj => L.map(k => obj[k], L.keys(obj));
+L.entries = obj => L.map(k => [k, obj[k]], L.keys(obj));
+
 const map = curry(function (..._) {
   return [...L.map(..._)];
 });
@@ -100,6 +122,31 @@ const range = curry(function(..._) {
   return [...L.range(..._)];
 });
 
-const flat = curry(function (iter) {
+const flat = function (iter) {
   return [...L.flat(iter)];
-});
+};
+
+const identity = a => a;
+
+const head = pipe(L.take(1), reduce(identity));
+
+const find = curry(pipe(L.filter, head));
+
+const some = curry(pipe(
+  L.map,
+  L.takeUntil(Boolean),
+  reduce(or),
+  Boolean));
+
+const every = curry(pipe(
+  map,
+  L.takeUntil(not),
+  reduce(and),
+  Boolean));
+
+const fromEntries = pipe(
+  L.map(([k, v]) => ({[k]: v})),
+  reduce(Object.assign));
+
+const sum = reduce(add);
+const sumMap = curry(pipe(L.map, sum));
