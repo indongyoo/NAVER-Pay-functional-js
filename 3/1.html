@@ -102,5 +102,31 @@ log(some2(a => a > 2, [1, 2, 3, 4, 5, 6]));
 // true
 </script>
 
+- 함수 조합으로 함수 만드는 함수 만들기
+<script type="module">
+const some = curry(pipe(
+  L.map,
+  L.takeUntil(Boolean),
+  reduce(or),
+  Boolean));
+
+const every = curry(pipe(
+  map,
+  L.takeUntil(not),
+  reduce(and),
+  Boolean));
+</script>
+
+<script type="module">
+const baseBoolAll = (f1, f2) => curry(pipe(
+  L.map,
+  L.takeUntil(f1),
+  reduce(f2),
+  Boolean));
+
+const some = baseBoolAll(Boolean, or);
+const every = baseBoolAll(not, and);
+</script>
+
 </body>
 </html>

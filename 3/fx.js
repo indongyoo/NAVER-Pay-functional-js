@@ -106,25 +106,15 @@ L.keys = function* (obj) {
 L.values = obj => L.map(k => obj[k], L.keys(obj));
 L.entries = obj => L.map(k => [k, obj[k]], L.keys(obj));
 
-const map = curry(function (..._) {
-  return [...L.map(..._)];
-});
+const map = curry(pipe(L.map, takeAll));
 
-const filter = curry(function (..._) {
-  return [...L.filter(..._)];
-});
+const filter = curry(pipe(L.filter, takeAll));
 
-const take = curry(function(..._) {
-  return [...L.take(..._)];
-});
+const take = curry(pipe(L.take, takeAll));
 
-const range = curry(function(..._) {
-  return [...L.range(..._)];
-});
+const range = pipe(L.range, takeAll);
 
-const flat = function (iter) {
-  return [...L.flat(iter)];
-};
+const flat = pipe(L.flat, takeAll);
 
 const identity = a => a;
 
@@ -149,4 +139,5 @@ const fromEntries = pipe(
   reduce(Object.assign));
 
 const sum = reduce(add);
+
 const sumMap = curry(pipe(L.map, sum));

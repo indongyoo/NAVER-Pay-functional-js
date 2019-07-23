@@ -96,10 +96,10 @@ const take = curry(function(..._) {
   return [...L.take(..._)];
 });
 
-const range = curry(function(..._) {
+const range = function(..._) {
   return [...L.range(..._)];
-});
+};
 
-const flat = curry(function (iter) {
+const flat = function (iter) {
   return [...L.flat(iter)];
-});
+};
