@@ -15,13 +15,13 @@ const and = (a, b) => a && b;
 
 function* empty() {}
 
-function toIer(iter) {
+function toIter(iter) {
   return iter && iter[Symbol.iterator] ? iter[Symbol.iterator]() : empty();
 }
 
 const reduce = curry(function(f, acc, iter) {
   if (arguments.length == 2) {
-    iter = toIer(acc);
+    iter = toIter(acc);
     acc = iter.next().value;
   }
   for (const a of iter) {
@@ -57,7 +57,10 @@ const pipe = (f, ...fs) =>
 const L = {};
 
 L.takeUntil = curry(function* (f, iter) {
-  for (const a of iter) {
+  iter = toIter(iter);
+  while (true) {
+    const { value: a, done } = iter.next();
+    if (done) break;
     yield a;
     if (f(a)) break;
   }
@@ -82,11 +85,8 @@ L.range = curry(function* (start, stop, step = 1) {
   }
 });
 
-L.take = curry(function* (l, iter) {
-  for (const a of iter) {
-    yield a;
-    if (--l == 0) break;
-  }
+L.take = curry(function (l, iter) {
+  return l == 0 ? empty() : L.takeUntil(_ => --l == 0, iter);
 });
 
 L.flat = function* (iter) {

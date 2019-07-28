@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>4.1</title>
+</head>
+<body>
+
+<script src="fx.js"></script>
+
+1. 비동기/동시성 프로그래밍
+- callback과 Promise
+- 비동기를 값으로 만드는 Promise
+- 값으로서의 Promise 활용
+- 합성 관점에서의 Promise와 모나드
+- go, pipe, reduce에서 비동기 제어
+
+<script>
+</script>
+
+2. 비동기 제어에 앞서
+- range, take의 재해석
+<script type="module">
+const list = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+const chunkArray = (n, arr) => {
+  const iter = toIter(arr);
+  return go(
+    L.range(0, Math.ceil(arr.length / n)),
+    map(_ => take(n, iter)));
+};
+
+L.chunk = (n, iter) => {
+  iter = toIter(iter);
+  return go(
+    L.range(0, Infinity),
+    L.map(_ => take(n, iter)),
+    L.takeWhile(a => a.length));
+};
+
+const chunk = pipe(L.chunk, takeAll);
+
+log(chunk(3, list));
+log(chunk(4, list));
+log(chunk(3, function* () {
+  yield 10;
+  yield 10;
+  yield 10;
+  yield 10;
+  yield 10;
+  yield 10;
+  yield 10;
+} ()));
+</script>
+
+
+</body>
+</html>

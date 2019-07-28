@@ -64,12 +64,12 @@ const add = (a, b) => a + b;
 - array 보다 iterable
 <script>
 function* empty() {}
-function toIer(iter) {
+function toIter(iter) {
   return iter && iter[Symbol.iterator] ? iter[Symbol.iterator]() : empty();
 }
 const reduce = curry(function(f, acc, iter) {
   if (arguments.length == 2) {
-    iter = toIer(acc);
+    iter = toIter(acc);
     acc = iter.next().value;
   }
   for (const a of iter) {

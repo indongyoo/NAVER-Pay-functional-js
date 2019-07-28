@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>4.2</title>
+  <script>const {log, clear, dir} = console;</script>
+</head>
+<body>
+
+<script src="../fx.min.js"></script>
+
+4. 아임포트 결제 누락 처리 스케쥴러 만들기
+
+<script>
+const { delay, L, go, map, each, flat, join } = fx;
+
+const Impt = {
+  payments: {
+    1: [
+      { imp_id: 11, order_id: 1, amount: 15000 },
+      { imp_id: 12, order_id: 2, amount: 25000 },
+      { imp_id: 13, order_id: 3, amount: 10000 }
+    ],
+    2: [
+      { imp_id: 14, order_id: 4, amount: 25000 },
+      { imp_id: 15, order_id: 5, amount: 45000 },
+      { imp_id: 16, order_id: 6, amount: 15000 }
+    ],
+    3: [
+      { imp_id: 17, order_id: 7, amount: 20000 },
+      { imp_id: 18, order_id: 8, amount: 30000 }
+    ],
+    4: [],
+    5: [],
+    //...
+  },
+  getPayments: page => {
+    console.log(`http://..?page=${page}`);
+    return delay(1000 * 1, Impt.payments[page]);
+  },
+  cancelPayment: async imp_id => {
+    await delay(1000, undefined);
+    log(`${imp_id} 취소완료`);
+  }
+};
+
+const DB = {
+  getOrders: ids => {
+    log(`SELECT id FROM orders WHERE id IN (${ids.join(',')})`);
+    return delay(100, [
+      { id: 1 },
+      { id: 3 },
+      { id: 5 },
+      { id: 7 },
+      { id: 8 },
+    ])
+  }
+};
+
+async function job() {
+  console.log('job 시작');
+
+  // 결제된 결제모듈측 payments 가져온다.
+  // page 단위로 가져와야한다.
+  // 결제 데이터가 있을 때까지 모두 가져와서 하나로 합친다.
+  const payments = await go(
+    L.range(1, Infinity),
+    L.map(Impt.getPayments),
+    L.takeUntil(({length}) => length < 3),
+    flat);
+
+  // 결제되었다는 가맹점측 주문서 ids들을 뽑아서
+  // 가맹점 DB에 정상적으로 주문이 된 가맹정측 주문서들을 가져와서 id만 뽑는다.
+  // DB.getOrders(ids): SELECT * FROM orders WHERE id IN (ids)
+  const orderIds = await go(
+    payments,
+    map(p => p.order_id),
+    DB.getOrders,
+    map(o => o.id));
+
+  // 결제모듈의 payments와 가맹점의 주문서를 비교해서
+  // 결제를 취소해야할 id들을 뽑아서
+  // 결제 취소 api를 실행
+  await go(
+    payments,
+    L.reject(p => orderIds.includes(p.order_id)),
+    L.map(p => p.imp_id),
+    C.map(Impt.cancelPayment));
+
+  console.log('job 끝');
+}
+
+go(L.range(Infinity),
+  each(_ => Promise.all([
+    job(),
+    go(delay(7000, undefined), _ => log('7초됨'))
+  ])));
+</script>
+
+</body>
+</html>

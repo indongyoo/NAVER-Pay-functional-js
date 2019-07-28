@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>4.2</title>
+  <script>const {log, clear, dir} = console;</script>
+</head>
+<body>
+
+<script src="../fx.min.js"></script>
+
+3. 비동기/동시성/병렬성
+- map, filter, reduce
+- Lazy Async
+- Concurrency
+
+4. 시간을 이터러블로 다루기
+
+<script type="module">
+const { go, L, each, delay } = fx;
+
+go(
+  L.range(Infinity),
+  L.map(delay(1000)),
+  L.take(4),
+  each(log));
+</script>
+
+</body>
+</html>
