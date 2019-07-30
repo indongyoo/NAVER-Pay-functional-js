@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>4.2</title>
+  <script>const {log, clear, dir} = console;</script>
+</head>
+<body>
+
+<script src="../fx.min.js"></script>
+<script>
+  const { reduce, C, add, go, L, each, delay } = fx;
+</script>
+
+2. 비동기 제어에 앞서
+- range, take의 재해석
+<script type="module">
+
+go(
+  L.range(0, Infinity),
+  L.map(a => a * a),
+  L.filter(a => a % 2),
+  L.takeUntil(a => a > 50),
+  // L.takeWhile(a => a < 50),
+  /*each(log)*/);
+</script>
+
+3. 비동기/동시성/병렬성
+- map, filter, reduce
+- Lazy Async
+- Concurrency
+<script>
+const res = go(
+  [1, 2, 3, 4, 5, 6],
+  L.map(a => delay(1000, a)),
+  L.map(a => a * a),
+  L.filter(a => a % 2),
+  C.reduce(add),
+  log);
+
+delay(1000, 5)
+  .then(a => delay(1000, a + 10))
+  .then(a => delay(1000, a + 10))
+  .then(a => delay(1000, a + 10))
+  .then(log);
+
+Promise.all([
+  delay(1000, 5),
+  delay(1000, 5),
+]).then(log);
+
+
+</script>
+
+4. 시간을 이터러블로 다루기
+<script type="module">
+</script>
+
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>4.1</title>
+</head>
+<body>
+
+<script src="fx.js"></script>
+
+1. 비동기/동시성 프로그래밍
+
+- callback과 Promise
+- 비동기를 값으로 만드는 Promise
+<script>
+function add10(a, callback) {
+  setTimeout(() => {
+    callback(a + 10);
+  }, 500);
+}
+add10(5, function(res) {
+  add10(res, function(res) {
+    add10(res, function(res) {
+      add10(res, function(res) {
+        // log(res);
+      });
+    });
+  });
+});
+
+function add5(a) {
+  return new Promise(resolve =>
+    setTimeout(() => resolve(a + 5), 500));
+}
+
+const p1 = add5(5)
+  .then(add5)
+  .then(add5)
+  .then(add5);
+
+// log(p1);
+</script>
+
+- 값으로서의 Promise 활용
+<script type="module">
+const go1 = (a, f) =>
+  a instanceof Promise ?
+    a.then(f) :
+    f(a);
+
+const add20 = a => a + 20;
+
+// go1(add20(5), log);
+// go1(add5(5).then(add5).then(add5).then(add5), log);
+
+var a = new Promise(resolve => {
+  resolve(new Promise(resolve => {
+    resolve(new Promise(resolve => {
+      resolve(1000);
+    }));
+  }))
+});
+
+// a.then(log);
+</script>
+
+- 합성 관점에서의 Promise
+<script type="module">
+// f(g(x)) = f(g(x))
+const f = a => a + 10;
+const g = a => a - 5;
+const g2 = a => Promise.resolve(a - 5);
+
+// log(f(g(10)));
+// log(f(g()));
+
+[].map(g).map(f).forEach(a => log(a));
+
+// Array.of(10).map(g).map(f).forEach(a => log(a));
+// Array.of(10).map(g2).map(f).forEach(a => log(a));
+
+// Promise.resolve(10).then(g).then(f).then(a => log(a));
+// Promise.resolve(10).then(g2).then(f).then(a => log(a));
+
+// f(g3(x)) = f(g3(x))
+// f(g3(x)) = g3(x)
+
+// f1 = f . g3
+
+const g3 = a => isNaN(a) ? Promise.reject(0) : a + 10;
+
+function f1(x) {
+  return Promise
+    .resolve(x)
+    .then(g3)
+    .then(f)
+}
+
+// f1(10 + 10).then(log, log);
+// f1(undefined + 10).then(log).catch(log);
+</script>
+
+- go, reduce에서 비동기 제어
+<script type="module">
+const res = go(10,
+  a => Promise.resolve(a + 10),
+  a => Promise.resolve(a + 5));
+
+// res.then(log);
+
+const res2 = go(10,
+  a => a + 10,
+  a => a + 5);
+
+// log(res2);
+
+const getUsers1 = () => [{age: 30}, {age: 20}, { age: 22 }];
+
+const getUsers2 = () =>
+  new Promise(resolve => {
+    setTimeout(_ => resolve(
+      [{age: 30}, null, { age: 22 }]
+    ), 1000);
+  });
+
+(async () => {
+  const res3 = await go(
+    getUsers1(),
+    map(u => u.age),
+    reduce(add));
+
+  try {
+    var res4 = await go(
+      getUsers2(),
+      map(u => u.age),
+      reduce(add));
+  } catch (e) {
+    res4 = 0;
+  }
+
+  log(res3 + res4);
+}) ();
+
+</script>
+
+
+</body>
+</html>

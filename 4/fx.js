@@ -19,13 +19,18 @@ function toIter(iter) {
   return iter && iter[Symbol.iterator] ? iter[Symbol.iterator]() : empty();
 }
 
+const go1 = (a, f) =>
+  a instanceof Promise ?
+    a.then(f) :
+    f(a);
+
 const reduce = curry(function(f, acc, iter) {
   if (arguments.length == 2) {
     iter = toIter(acc);
     acc = iter.next().value;
   }
   for (const a of iter) {
-    acc = f(acc, a);
+    acc = go1(acc, acc => f(acc, a));
   }
   return acc;
 });
