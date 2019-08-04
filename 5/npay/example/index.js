@@ -1,5 +1,6 @@
 import * as Images from "../modules/Images/index.js";
 import * as UI from "../modules/UI/index.js";
+import { go, L, C, each, delay } from "../node_modules/fxjs2/index.js";
 
 (async () => {
   await Images.main();
@@ -11,5 +12,5 @@ import * as UI from "../modules/UI/index.js";
   // ], '확인되었습니다.');
   // UI.alert('확인되었습니다.');
   // UI.alert('확인되었습니다.');
-  console.log(await UI.prompt('확인되었습니다.'));
+  // console.log(await UI.prompt('확인되었습니다.'));
 }) ();
