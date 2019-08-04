@@ -4,11 +4,12 @@ import { go, strMap, curry, map, pipe, tap, omit } from '../../node_modules/fxjs
 import Invite from "../Invite/index.js";
 
 const PaymentItem = {};
-PaymentItem.tmpl = pipe(tap(console.log), p => `
+
+PaymentItem.tmpl = p => `
   <tr class="payment">
     <td class="user_name">${p._.user.name}</td>
     <td class="amount"><input type="text" value="${p.amount}"></td>
-  </tr>`);
+  </tr>`;
 
 const usersToPayments = curry((amount, users) => map(user => ({
   _: { user },
