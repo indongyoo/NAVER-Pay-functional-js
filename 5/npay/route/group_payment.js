@@ -38,13 +38,20 @@ app.get('/group_payment_test', (req, res) =>
 );
 
 app.get('/group_payments/:id', async ({params: {id}}, res) => {
-  const group_payment = await QUERY1 `
-    SELECT * FROM group_payments WHERE id = ${id}
-  `;
+  const [group_payment, payments] = await Promise.all([
+    QUERY1 `
+      SELECT * FROM group_payments WHERE id = ${id}`,
+    ASSOCIATE `
+      payments ${SQL `WHERE group_payment_id = ${id}`}
+        - user`]);
 
-  const payments = await ASSOCIATE `
-    payments ${SQL `WHERE group_payment_id = ${id}`}
-      - user`;
+  // const group_payment = await QUERY1 `
+  //   SELECT * FROM group_payments WHERE id = ${id}
+  // `;
+  //
+  // const payments = await ASSOCIATE `
+  //   payments ${SQL `WHERE group_payment_id = ${id}`}
+  //     - user`;
 
   // const payments = await QUERY `
   //   SELECT * FROM payments WHERE group_payment_id = ${id}
