@@ -17,7 +17,7 @@ const usersToPayments = curry((amount, users) => map(user => ({
   amount: amount / users.length
 }), users));
 
-const open = ({amount}) => new Promise(async resolve => {
+const open = async ({amount}) => {
   const me = await $.get('/api/me', undefined);
 
   let States = {
@@ -60,7 +60,7 @@ const open = ({amount}) => new Promise(async resolve => {
       strMap(PaymentItem.tmpl),
       $.setHTML($.find('.payments', page))
     )));
-});
+};
 
 export const main = ({amount}) => go(
   {amount},
