@@ -1,0 +1,32 @@
+{
+  "name": "npay",
+  "version": "0.1.0",
+  "description": "",
+  "scripts": {
+    "start": "nodemon --experimental-modules app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "",
+  "license": "ISC",
+  "homepage": "",
+  "dependencies": {
+    "body-parser": "^1.16.0",
+    "compression": "^1.6.2",
+    "cookie-parser": "^1.4.3",
+    "ejs": "^2.5.5",
+    "express": "^4.14.1",
+    "express-session": "^1.15.0",
+    "fxjs2": "^0.11.3",
+    "fxsql": "^1.2.0",
+    "knex": "^0.19.1",
+    "method-override": "^2.3.7",
+    "morgan": "^1.9.1",
+    "node-gyp": "^3.8.0",
+    "stylus": "^0.54.5"
+  },
+  "devDependencies": {},
+  "type": "module"
+}
