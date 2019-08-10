@@ -152,21 +152,28 @@
     - 고차 함수로 더 작게 나누어 재사용성 높이기 - 데이터형 없애기
     - 상위 스코프 변수를 사용하는 함수와 아닌 함수들 쪼개기
     - DOM을 다루는 고차 함수
-2. page 띄우기
-    - 동시성을 다뤄 자연스러운 UX 구현
+2. NPay 함께 결제 서비스 만들기
+    - 결제할 가게 선택
+    - Page 띄우기
+    - 함께 결제할 친구 초대
 
 ## 6회
-1. 안전한 합성
-    - map으로 합성하기
-    - find 대신 filter + take
-    - 효과가 있는 함수
-    - 효과가 없는 함수
-    - 사용자 정의 객체의 단점
-2. 에러 핸들링
+
+1. NPay 함께 결제 서비스 만들기
+    - 함께 결제 데이터베이스 INSERT
+    - 데이터베이스 트랜잭션과 async/await + try/catch
+    - 결제 완료 페이지 SSR
+    - 중첩 데이터 WHERE IN 쿼리 후 조합
+    - 동시성 쿼리
+2. 데이터베이스 코드 사례
+    - 복잡한 중첩 데이터 ASSOCIATE
+    - No Model, 데이터베이스 VIEW 테이블 활용
+    - partition 후 INSERT, UPDATE
+    - rows to CSV, CSV to rows 함수형으로 다루기
+3. 에러 핸들링
     - try/catch
-3. 비동기 에러 핸들링
+4. 비동기 에러 핸들링
     - 왜 Array.prototype.map으로는 비동기 에러 핸들링이 안되는지?
-    - Promise
     - async/await/try/catch
 
 # 2차 심화 과정 상세 (draft)
@@ -174,51 +181,26 @@
 ## 1회
 1. 데이터 베이스
     - SQL 인젝션을 완벽히 막으려면?
-    - SQL 함수형으로 다루기
-    - INSERT, SELECT, UPDATE, DELETE
-    - IN, NOT IN
-
-2. 데이터베이스 트랜잭션과 에러 핸들링
-    - 비동기를 동기화하기
-    - 동시/병렬성 프로그래밍에서의 에러 핸들링/트랜젝션 문제 해결
-    - async/await + try/catch 와 트랜잭션 조합
-
-## 2회
-1. 함수형 데이터 핸들링
-    - SNS 데이터 WHERE IN 쿼리 후 groupBy, indexBy로 병합
-    - rows to CSV, CSV to rows 함수형으로 다루기
-    - 커머스 데이터 핸들링
-
-2. 함수형으로 쿼리 최적화
-    - 지연성으로 최적화
-    - partition으로 최적화
-    - Multiple UPDATE
-    - Multiple DELETE
-
-## 3회
-1. 중첩 데이터 다루기
+2. 중첩 데이터 다루기
     - 깊은 값 조회
     - 깊은 값 변경
-
-2. 불변성
+3. 불변성
     - 영속성
     - 깊은 값 불변적 변경
+4. NoSQL을 잘 다루는 비결
 
-3. NoSQL을 잘 다루는 비결
+## 2회
+1. ES6 Module
+2. 트랜스파일링 + 번들링
+3. npm modules + 내부 라이브러리 관리
 
-## 4회
-1. 백엔드 Node.js + 프론트엔드 VanillaJS 프로젝트 세팅
-2. ES6 Module
-3. 트랜스파일링 + 번들링
-4. npm modules + 내부 라이브러리 관리
-
-## 5회
+## 3회
 1. 백엔드와 프론트엔드 코드 공유
 2. JSON 기반 프로그래밍의 장점
 3. 서버사이드 렌더링
 4. API 서버
 
-## 6회 ~ 8회
+## 4회 ~ 6회
 1. 코드 리뷰
 2. N pay 최적화 보일러 플레이트 논의 및 적용
 3. 앱 개발
