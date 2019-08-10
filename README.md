@@ -172,7 +172,7 @@
     - rows to CSV, CSV to rows 함수형으로 다루기
 3. 에러 핸들링
     - try/catch
-4. 비동기 에러 핸들링
+    - 비동기 에러 핸들링
     - 왜 Array.prototype.map으로는 비동기 에러 핸들링이 안되는지?
     - async/await/try/catch
 
