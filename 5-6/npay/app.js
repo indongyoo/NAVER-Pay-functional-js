@@ -51,6 +51,11 @@ global.app = express();
   app.use(express.static(path.resolve(__dirname, './')));
   app.use(logger('dev'));
 
+  app.use((req, res, next) => {
+    req.session = { user: { id: 1 } };
+    next();
+  });
+
   await import('./route/index.js');
 
   app.use(function(req, res, next) {

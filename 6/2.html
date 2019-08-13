@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>6.2</title>
+  <script>const {log, clear, dir} = console;</script>
+</head>
+<body>
+
+<script src="../fx.min.js"></script>
+
+2. 에러 핸들링
+- try/catch
+<script>
+  // try {
+  //   asdasd
+  // } catch (e) {
+  //   console.log(e, 'error catch!!!');
+  // }
+</script>
+- 비동기 에러 핸들링
+- 왜 Array.prototype.map으로는 비동기 에러 핸들링이 안되는지?
+<script>
+  const { map, go } = fx;
+  async function a() {
+    try {
+      var res = await go(
+      [{ value: 1 }, { value: 2 }, null, { value: 4 }],
+      map(a => new Promise(resolve => {
+        resolve(a.value + 10);
+      })),
+      map(async a => console.log(await a + 10)));
+    } catch (e) {
+      console.log('!@#!@#!@##', e);
+    }
+    // try {
+    //   var res = await [{ value: 1 }, { value: 2 }, null, { value: 4 }]
+    //   .map(a => new Promise(resolve => {
+    //     resolve(a.value + 10);
+    //   }))
+    //   .map(async a => console.log(await a + 10));
+    // } catch (e) {
+    //   console.log('!@#!@#!@##', e);
+    // }
+  }
+
+  a();
+
+
+</script>
+
+- async/await/try/catch
+
+</body>
+</html>

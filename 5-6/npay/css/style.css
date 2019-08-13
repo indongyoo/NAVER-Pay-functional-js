@@ -1,0 +1,162 @@
+table {
+  border-collapse: collapse;
+}
+.fade-in {
+  opacity: 1 !important;
+  transition: opacity 0.4s;
+}
+.images {
+  padding: 16px;
+  overflow: hidden;
+}
+.images .image {
+  margin: 8px;
+  float: left;
+  position: relative;
+}
+.images .image .box {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border: 1px solid #ccc;
+}
+.images .image .box img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  max-width: 80%;
+  max-height: 80%;
+  opacity: 0;
+}
+.images .image .name {
+  text-align: center;
+  padding: 4px;
+}
+.images .image .remove {
+  position: absolute;
+  display: inline-block;
+  top: -10px;
+  right: -10px;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 50%;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+  background: #000;
+  color: #fff;
+  border: 0;
+  font-weight: bold;
+  outline: none;
+}
+.message {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.2);
+}
+.message .body {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  width: 300px;
+  height: 160px;
+  background: #fff;
+  border-radius: 8px;
+  text-align: center;
+}
+.message .msg {
+  padding: 0 24px;
+  margin-top: 36px;
+}
+.message .input,
+.message .buttons {
+  margin-top: 16px;
+}
+.message button {
+  padding: 8px;
+  width: 60px;
+  border: 0;
+  background: #eee;
+  border-radius: 8px;
+  margin: 3px;
+}
+.message button.ok {
+  border: 0;
+  color: #fff;
+  background: #000;
+}
+.page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: #fff;
+}
+.page > .header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  border-bottom: 1px solid #ccc;
+}
+.page > .header h1 {
+  padding: 11px 0 0;
+  margin: 0;
+  font-size: 14px;
+  text-align: center;
+}
+.page > .header button {
+  position: absolute;
+  top: 8px;
+  height: 24px;
+  line-height: 24px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: #fff;
+}
+.page > .header button.right {
+  right: 8px;
+}
+.page > .body {
+  position: absolute;
+  top: 41px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+  overflow-x: hidden;
+}
+.page table {
+  width: 100%;
+}
+.page table td {
+  padding: 8px 16px;
+  border-bottom: 1px solid #ccc;
+}
+.page table td:last-child {
+  text-align: right;
+}
+.page[page-name="payment"] {
+  text-align: center;
+}
+.page[page-name="payment"] > .body > .amount {
+  padding: 30px;
+  font-size: 32px;
+  font-weight: bold;
+}
+.page[page-name="payment"] > .body table {
+  border-top: 1px solid #ccc;
+}

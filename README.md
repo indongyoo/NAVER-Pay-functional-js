@@ -162,15 +162,12 @@
 1. NPay 함께 결제 서비스 만들기
     - 함께 결제 데이터베이스 INSERT
     - 데이터베이스 트랜잭션과 async/await + try/catch
-    - 결제 완료 페이지 SSR
     - 중첩 데이터 WHERE IN 쿼리 후 조합
+    - 결제 완료 페이지 SSR
     - 동시성 쿼리
-2. 데이터베이스 코드 사례
     - 복잡한 중첩 데이터 ASSOCIATE
-    - No Model, 데이터베이스 VIEW 테이블 활용
-    - partition 후 INSERT, UPDATE
-    - rows to CSV, CSV to rows 함수형으로 다루기
-3. 에러 핸들링
+    - No Model
+2. 에러 핸들링
     - try/catch
     - 비동기 에러 핸들링
     - 왜 Array.prototype.map으로는 비동기 에러 핸들링이 안되는지?
