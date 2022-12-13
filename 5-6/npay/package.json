@@ -17,7 +17,7 @@
     "compression": "^1.6.2",
     "cookie-parser": "^1.4.3",
     "ejs": "^2.5.5",
-    "express": "^4.14.1",
+    "express": "^4.17.3",
     "express-session": "^1.15.0",
     "fxjs2": "^0.11.4",
     "fxsql": "^1.2.0",
