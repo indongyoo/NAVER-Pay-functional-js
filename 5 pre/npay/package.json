@@ -21,7 +21,7 @@
     "express-session": "^1.15.0",
     "fxjs2": "^0.11.4",
     "fxsql": "^1.2.0",
-    "knex": "^0.19.5",
+    "knex": "^2.4.0",
     "method-override": "^2.3.7",
     "morgan": "^1.9.1",
     "node-gyp": "^3.8.0",
